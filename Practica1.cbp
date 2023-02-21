@@ -33,11 +33,12 @@
 			<Add option="-fexceptions" />
 		</Compiler>
 		<Unit filename="main.cpp" />
+		<Unit filename="management.cpp" />
+		<Unit filename="management.h" />
+		<Unit filename="products.cpp" />
 		<Unit filename="products.h" />
-		<Unit filename="program.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
+		<Unit filename="program.cpp" />
+		<Unit filename="program.h" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>

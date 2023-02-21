@@ -4,15 +4,27 @@
 */
 
 
-#include "products.h"
-#include "program.cpp"
+#include <iostream>
+#include <clocale>
+#include "program.h"
+
+
+using std::cout;
+using std::cin;
+using std::endl;
 
 
 int main(){
-	Product *products[MAX_CHARS_OF_ID];
-	short counterRegs = -1;
+	setlocale(LC_CTYPE, "spanish");
 
-	principalProgram(products, counterRegs);
+	try{
+		Program *program = new Program();
+
+		program->principal();
+	}
+	catch(const char *ex){
+		cout<<ex<<endl;
+	}
 
     return 0;
 }

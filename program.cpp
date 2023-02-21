@@ -1,150 +1,151 @@
-/**
-	@Autor: Hector Geovanny Rodriguez Martinez.
-*/
+#include "program.h"
 
 #include <iostream>
-#include <cstdlib>
-#include <cstring>
+#include "management.h"
 #include "products.h"
-
-
-using namespace std;
 
 
 #ifdef _WIN32
 	#define CLEAR "cls"
-	#define IS_WINDOWS true
 #else
 	#define CLEAR "clear"
-	#define IS_WINDOWS false
 #endif // _WIN32
-#define MAX_REGS 50
 enum {ADD = 'A', SHOW_ALL, FIND, DELETE, EXIT};
 
 
-void addRegister(Product *array[MAX_REGS], short &counterRegs);
-void showAllRegisters(Product *array[MAX_REGS], short &counterRegs);
-void findProduct(Product *array[MAX_REGS], short &counterRegs);
-short findByID(
-	Product *array[MAX_REGS], short &counterRegs, const char idToFind[MAX_CHARS_OF_ID]
-);
-void deleteRegister(Product *array[MAX_REGS], short &counterRegs);
-char printMenu();
-void color();
-void pauseProgram();
-void invalidOption();
-void principalProgram(Product *array[MAX_REGS], short &counterRegs);
-void printProduct(Product *product);
+using std::string;
+using std::cout;
+using std::cin;
+using std::endl;
+using std::getline;
 
 
-void color(){
-	if( IS_WINDOWS ){
-		system("color f0");
+///------------------------------------------------------------------------------------------------- Constructor
+//-------------------------------------------------------------------------------------------------- Base
+Program::Program(): managementList(new Management()) {
+	if( managementList == nullptr ){
+		throw("Hubo un error al intentar crear el objeto para los registros.");
 	}
 }
 
-//--------------------------------------------------------------------------------------------------
-void printProduct(Product *product){
-	if( ! product->isDeleted ){
-		std::cout<<"Producto: "<<product->id;
-		std::cout<<" ----------------------"<<std::endl;
-		std::cout<<"Nombre: "<<product->name<<std::endl;
-		std::cout<<"Precio: "<<product->price<<std::endl;
-		std::cout<<"Descripcion: "<<product->description<<std::endl;
-		std::cout<<"Unidad de peso: "<<product->weightUnit<<std::endl<<std::endl;
-	}
+///------------------------------------------------------------------------------------------------- Destructor
+//-------------------------------------------------------------------------------------------------- destructor
+Program::~Program() {
+	delete (this->managementList);
+	this->managementList = nullptr;
 }
 
-
+///------------------------------------------------------------------------------------------------- Getters
 //--------------------------------------------------------------------------------------------------
-void addRegister(Product *array[MAX_REGS], short &counterRegs){
-	Product *product = new Product;
-	short regExistPos = -1, insertInPos = -1;
-	bool isToAdd = false;
-	char option = '\0';
-	string aux = "";
+const Management* Program::getManagementList(){
+	return this->managementList;
+}
 
-	cout<<"Agregar nuevo registro."<<endl<<endl;
+///------------------------------------------------------------------------------------------------- Setters
+//--------------------------------------------------------------------------------------------------
+void Program::setManagementList(Management& mng){
+	int i = 0;
 
-	if( product == nullptr || (counterRegs + 1) == MAX_REGS ){
-		cout<<"No fue posible crear un nuevo registro :("<<endl<<endl;
+	if( this->managementList == nullptr ){
+		this->managementList = new Management(mng);
 	}
 	else{
-		product->isDeleted = false;
-		cout<<"Codigo del producto: ";
-		cin>>product->id;
-		cin.ignore(1);
-		cout<<"Nombre del producto: ";
-		getline(cin, product->name, '\n');
-		cout<<"Precio del producto: ";
-		cin>>product->price;
-		cin.ignore(1);
-		cout<<"Descripcion del producto: ";
-		getline(cin, product->description, '\n');
-		cout<<"Unidad de peso del producto: ";
-		getline(cin, product->weightUnit, '\n');
-
-		regExistPos = findByID(array, counterRegs, product->id);
-
-		if( regExistPos == -1 ){
-			isToAdd = true;
-			insertInPos = ++counterRegs;
-		}
-		else{
-			insertInPos = regExistPos;
-
-			if( array[regExistPos]->isDeleted ){
-				isToAdd = true;
+		while( i <= mng.getCounterOfRegs() ){
+			try{
+				this->managementList->addRegister(mng.getProducts()[i], Program::inCaseOfExisting);
 			}
-			else{
-				cout<<endl<<"Ya existe un producto con el mismo ID."<<endl;
-				cout<<"¿Desea remplazarlo? (S / N): ";
-				cin>>option;
-				option = toupper(option);
-				cin.ignore(1);
-
-				if( option == 'S' ){
-					isToAdd = true;
-				}
+			catch(const char *ex){
+				throw(ex);
 			}
-		}
 
-		if ( isToAdd ){
-			array[insertInPos] = product;
-			cout<<endl<<"El producto se agrego satisfactoriamente."<<endl<<endl;
-		}
-	}
-
-	pauseProgram();
-}
-
-//--------------------------------------------------------------------------------------------------
-void showAllRegisters(Product *array[MAX_REGS], short &counterRegs){
-	short i = 0;
-
-	cout<<"Todos los registros."<<endl<<endl;
-
-	if( counterRegs == -1 ){
-		cout<<"No hay registros para mostrar :("<<endl<<endl;
-	}
-	else{
-		while( i <= counterRegs ){
-			printProduct(array[i]);
 			i++;
 		}
 	}
+}
+
+
+///------------------------------------------------------------------------------------------------- Methods
+//--------------------------------------------------------------------------------------------------
+char Program::printMenu() const {
+	char option = '\0';
+
+	system(CLEAR);
+	cout<<"Menú principal"<<endl<<endl;
+	cout<<"Ingresa una opción."<<endl;
+	cout<<(char)ADD<<") Agregar nuevo registro."<<endl;
+	cout<<(char)SHOW_ALL<<") Mostrar todos los registros."<<endl;
+	cout<<(char)FIND<<") Buscar un registro."<<endl;
+	cout<<(char)DELETE<<") Eliminar un registro."<<endl;
+	cout<<(char)EXIT<<") Salir."<<endl<<endl;
+	cout<<"Opción ingresada: ";
+	cin>>option;
+	cin.ignore(1);
+	system(CLEAR);
+
+	return toupper(option);
+}
+
+//--------------------------------------------------------------------------------------------------
+void Program::addProductOption() {
+	string aux = "";
+	Product product;
+
+	cout<<"Agregar nuevo registro."<<endl<<endl;
+
+	if( this->managementList->isFull() ){
+		cout<<"No es posible agregar un nuevo registro."<<endl<<endl;
+	}
+	else{
+		cout<<"Código del producto: ";
+		getline(cin, aux, '\n');
+		product.setId(aux.c_str());
+		cout<<"Nombre del producto: ";
+		getline(cin, aux, '\n');
+		product.setName(aux);
+		cout<<"Precio del producto: ";
+		getline(cin, aux, '\n');
+		product.setPrice((float) stof(aux));
+		cout<<"Descripción del producto: ";
+		getline(cin, aux, '\n');
+		product.setDescription(aux);
+		cout<<"Unidad de peso del producto: ";
+		getline(cin, aux, '\n');
+		product.setWeightUnit(aux);
+
+		try{
+			this->managementList->addRegister(product, Program::inCaseOfExisting);
+			cout<<endl<<"El producto se agregó satisfactoriamente."<<endl<<endl;
+		}
+		catch(const char *ex){
+			cout<<ex<<endl<<endl;
+		}
+	}
 
 	pauseProgram();
 }
 
 //--------------------------------------------------------------------------------------------------
-void findProduct(Product *array[MAX_REGS], short &counterRegs){
+void Program::showProductsOption() {
+	cout<<"Todos los registros."<<endl<<endl;
+
+	if( this->managementList->isEmpty() ){
+		cout<<"No hay registros para mostrar :("<<endl<<endl;
+	}
+	else{
+		cout<<managementList->toString();
+	}
+
+	pauseProgram();
+}
+
+//--------------------------------------------------------------------------------------------------
+void Program::findProductOption() {
 	char idToFind[MAX_CHARS_OF_ID];
-	short posOfFind;
+	Product *posOfProduct = nullptr;
 
 	cout<<"Buscar un registro."<<endl<<endl;
 
-	if( counterRegs == -1 ){
+	if( this->managementList->isEmpty() ){
 		cout<<"No hay registros para buscar :("<<endl<<endl;
 	}
 	else{
@@ -154,13 +155,15 @@ void findProduct(Product *array[MAX_REGS], short &counterRegs){
 		cin.ignore(1);
 		cout<<endl;
 
-		posOfFind = findByID(array, counterRegs, idToFind);
+		posOfProduct = this->managementList->recoverProduct(
+			this->managementList->findProduct(idToFind)
+		);
 
-		if( posOfFind == -1 || array[posOfFind]->isDeleted ){
+		if( posOfProduct == nullptr || posOfProduct->getIsDeleted() ){
 			cout<<"No se ha podido localizar el producto solicitado :("<<endl<<endl;
 		}
 		else{
-			printProduct(array[posOfFind]);
+			cout<<posOfProduct->toString()<<endl<<endl;
 		}
 	}
 
@@ -168,30 +171,13 @@ void findProduct(Product *array[MAX_REGS], short &counterRegs){
 }
 
 //--------------------------------------------------------------------------------------------------
-short findByID(
-	Product *array[MAX_REGS], short &counterRegs, const char idToFind[MAX_CHARS_OF_ID]
-){
-	short i = 0;
-
-	while( i <= counterRegs ){
-		if( strcmp(array[i]->id, idToFind ) == 0 ){
-			return i;
-		}
-		i++;
-	}
-
-	return -1;
-}
-
-//--------------------------------------------------------------------------------------------------
-void deleteRegister(Product *array[MAX_REGS], short &counterRegs){
+void Program::deleteProductOption() {
 	char idToFind[MAX_CHARS_OF_ID];
-	char option = '\0';
-	short posOfFind = -1;
+	Product *posOfProduct = nullptr;
 
 	cout<<"Eliminar un registro."<<endl<<endl;
 
-	if( counterRegs == -1 ){
+	if( this->managementList->isEmpty() ){
 		cout<<"No hay registros para eliminar :("<<endl<<endl;
 	}
 	else{
@@ -201,24 +187,22 @@ void deleteRegister(Product *array[MAX_REGS], short &counterRegs){
 		cin.ignore(1);
 		cout<<endl;
 
-		posOfFind = findByID(array, counterRegs, idToFind);
+		posOfProduct = this->managementList->recoverProduct(
+			this->managementList->findProduct(idToFind)
+		);
 
-		if( posOfFind == -1 || array[posOfFind]->isDeleted ){
+		if( posOfProduct == nullptr || posOfProduct->getIsDeleted() ){
 			cout<<"No se ha podido localizar el producto solicitado :("<<endl<<endl;
 		}
 		else{
-			printProduct(array[posOfFind]);
-			cout<<"¿Desea eliminarlo? (S / N): ";
-			cin>>option;
-			cin.ignore(1);
-			option = toupper(option);
+			cout<<posOfProduct->toString();
 
-			if( option == 'S' ){
-				array[posOfFind]->isDeleted = true;
-				cout<<endl<<"Se ha eliminado el registro."<<endl<<endl;
+			try{
+				this->managementList->deleteRegister(posOfProduct, Program::inCaseOfExisting);
+				cout<<endl<<"El producto se eliminó satisfactoriamente."<<endl<<endl;
 			}
-			else{
-				cout<<endl<<"No se elimino el registro por cancelacion."<<endl<<endl;
+			catch( const char *ex ){
+				cout<<ex<<endl<<endl;
 			}
 		}
 	}
@@ -227,58 +211,60 @@ void deleteRegister(Product *array[MAX_REGS], short &counterRegs){
 }
 
 //--------------------------------------------------------------------------------------------------
-char printMenu(){
-	char option = '\0';
-
-	color();
-
-	system(CLEAR);
-	cout<<"Menu principal"<<endl<<endl;
-	cout<<"Ingresa una opcion."<<endl;
-	cout<<(char)ADD<<") Agregar nuevo registro."<<endl;
-	cout<<(char)SHOW_ALL<<") Mostrar todos los registros."<<endl;
-	cout<<(char)FIND<<") Buscar un registro."<<endl;
-	cout<<(char)DELETE<<") Eliminar un registro."<<endl;
-	cout<<(char)EXIT<<") Salir."<<endl<<endl;
-	cout<<"Opcion ingresada: ";
-	cin>>option;
-	cin.ignore(1);
-	system(CLEAR);
-
-	return toupper(option);
-}
-
-//--------------------------------------------------------------------------------------------------
-void pauseProgram(){
+void Program::pauseProgram() {
 	cout<<"presiona entrar para continuar...";
 	cin.ignore(1);
 	system(CLEAR);
 }
 
 //--------------------------------------------------------------------------------------------------
-void invalidOption(){
-	cout<<"Opcion invalida."<<endl;
+void Program::invalidOption() {
+	cout<<"Opción inválida."<<endl;
 	pauseProgram();
 }
 
 //--------------------------------------------------------------------------------------------------
-void principalProgram(Product *array[MAX_REGS], short &counterRegs){
+bool Program::inCaseOfExisting(const bool &isToDelete){
 	char option = '\0';
+	string title = "El ID ingresado ya existe en los registros.";
+	string message = "¿Desea remplazar el registro actual por el ingresado? [S / N]: ";
+
+	if( isToDelete ){
+		title = "Registro encontrado.";
+		message = "¿Desea eliminar el registro? [S / N]: ";
+	}
+
+	cout<<endl<<title<<endl<<message;
+	cin>> option;
+	cin.ignore(1);
+
+	if( toupper(option) == 'S' ){
+		return true;
+	}
+
+	return false;
+}
+
+
+//--------------------------------------------------------------------------------------------------
+void Program::principal() {
+	char option = '\0';
+
 	do{
 		option = printMenu();
 
 		switch( option ){
 			case ADD:
-				addRegister(array, counterRegs);
+				addProductOption();
 				break;
 			case SHOW_ALL:
-				showAllRegisters(array, counterRegs);
+				showProductsOption();
 				break;
 			case FIND:
-				findProduct(array, counterRegs);
+				findProductOption();
 				break;
 			case DELETE:
-				deleteRegister(array, counterRegs);
+				deleteProductOption();
 				break;
 			case EXIT:
 				break;
