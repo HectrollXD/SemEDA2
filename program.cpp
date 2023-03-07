@@ -1,3 +1,8 @@
+/**
+	@Autor: Hector Geovanny Rodriguez Martinez
+	@Time: 00:32:00
+*/
+
 #include "program.h"
 
 #include <iostream>

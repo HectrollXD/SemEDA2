@@ -1,3 +1,9 @@
+/**
+	@Autor: Hector Geovanny Rodriguez Martinez
+	@Time: 00:25:00
+*/
+
+
 #include <iostream>
 #include <cstring>
 #include "management.h"
