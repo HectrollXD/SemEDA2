@@ -1,6 +1,6 @@
 /**
 	@Autor: Hector Geovanny Rodriguez Martinez
-	@Time: 00:10:00
+	@Time: 00:00:30
 */
 
 #include <iostream>
@@ -37,6 +37,7 @@ class Program{
 		void setManagementList(Management &mng);
 		// Methods
 		void principal();
+		void insertWithBuffer();
 };
 
 

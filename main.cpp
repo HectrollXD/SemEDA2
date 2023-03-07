@@ -1,6 +1,6 @@
 /**
 	@Autor: Hector Geovanny Rodriguez Martinez.
-	@Tiempo 01:27:00
+	@Tiempo 00:03:00
 */
 
 
@@ -19,6 +19,8 @@ int main(){
 
 	try{
 		Program *program = new Program();
+
+		program->insertWithBuffer();
 
 		program->principal();
 	}

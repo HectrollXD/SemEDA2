@@ -1,0 +1,26 @@
+5
+0000000001
+manzanas
+45.2
+manzanas rojas
+KG
+0000000002
+mazanas 2
+42
+manzanas verdes
+KG
+0000000003
+uvas
+48
+uvas sin semilla
+KG
+0000000004
+melon
+100
+melon chino
+KG
+0000000005
+coco
+40
+la playa
+PIEZA

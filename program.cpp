@@ -1,6 +1,6 @@
 /**
 	@Autor: Hector Geovanny Rodriguez Martinez
-	@Time: 00:32:00
+	@Time: 00:02:30
 */
 
 #include "program.h"
@@ -250,6 +250,34 @@ bool Program::inCaseOfExisting(const bool &isToDelete){
 	return false;
 }
 
+//--------------------------------------------------------------------------------------------------
+void Program::insertWithBuffer(){
+	int cantOfRegisters = 0;
+	Product product;
+	string aux = "";
+
+	cin>>cantOfRegisters;
+
+	for( int i=0; i<cantOfRegisters; i++ ){
+		getline(cin, aux, '\n');
+		product.setId(aux.c_str());
+		getline(cin, aux, '\n');
+		product.setName(aux);
+		getline(cin, aux, '\n');
+		product.setPrice((float) stof(aux));
+		getline(cin, aux, '\n');
+		product.setDescription(aux);
+		getline(cin, aux, '\n');
+		product.setWeightUnit(aux);
+
+		try{
+			this->managementList->addRegister(product, Program::inCaseOfExisting);
+		}
+		catch(const char *ex){
+			throw(ex);
+		}
+	}
+}
 
 //--------------------------------------------------------------------------------------------------
 void Program::principal() {
