@@ -1,6 +1,6 @@
 /**
 	@Autor: Hector Geovanny Rodriguez Martinez
-	@Time: 00:02:30
+	@Time: 00:01:00
 */
 
 #include "program.h"
@@ -250,36 +250,29 @@ bool Program::inCaseOfExisting(const bool &isToDelete){
 	return false;
 }
 
-//--------------------------------------------------------------------------------------------------
-void Program::insertWithBuffer(){
-	int cantOfRegisters = 0;
-	Product product;
-	string aux = "";
-
-	cin>>cantOfRegisters;
-
-	for( int i=0; i<cantOfRegisters; i++ ){
-		getline(cin, aux, '\n');
-		product.setId(aux.c_str());
-		getline(cin, aux, '\n');
-		product.setName(aux);
-		getline(cin, aux, '\n');
-		product.setPrice((float) stof(aux));
-		getline(cin, aux, '\n');
-		product.setDescription(aux);
-		getline(cin, aux, '\n');
-		product.setWeightUnit(aux);
-
-		try{
-			this->managementList->addRegister(product, Program::inCaseOfExisting);
-		}
-		catch(const char *ex){
-			throw(ex);
-		}
-	}
+//-------------------------------------------------------------------------------------------------- read file character per character
+void Program::readFileCPerC(const string& pathOfFile) {
+	//TODO: Terminar la lectura de caracter por caracter.
 }
 
-//--------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------- read file line per line
+void Program::readFileLPerL(const string& pathOfFile) {
+	try{
+		this->managementList->readRegistersFromFile(pathOfFile);
+	}
+	catch( const char *ex ){
+		cout<<ex<<endl;
+	}
+
+	pauseProgram();
+}
+
+//-------------------------------------------------------------------------------------------------- save registers to file
+void Program::saveRegisters() {
+
+}
+
+//-------------------------------------------------------------------------------------------------- principal logig
 void Program::principal() {
 	char option = '\0';
 

@@ -1,15 +1,19 @@
 /**
 	@Autor: Hector Geovanny Rodriguez Martinez
-	@Time: 00:00:00
+	@Time: 00:15:00
 */
 
 
 #include <iostream>
 #include <cstring>
+#include <fstream>
 #include "management.h"
 
 
 using std::string;
+using std::istream;
+using std::ofstream;
+using std::ifstream;
 
 
 ///------------------------------------------------------------------------------------------------- Constructor
@@ -150,4 +154,32 @@ Product* Management::recoverProduct(const int& posToRecover){
 		return &this->products[posToRecover];
 	}
 	return nullptr;
+}
+
+//--------------------------------------------------------------------------------------------------
+void Management::saveRegistersToFile() {
+
+}
+
+//--------------------------------------------------------------------------------------------------
+void Management::readRegistersFromFile(const string &pathOfFile) {
+	Product newProduct;
+	ifstream file;
+	string aux;
+
+	file.open(pathOfFile, ifstream::in);
+
+	if( !file.is_open() ){
+		throw("No fue posible encontrar el archivo " + pathOfFile);
+	}
+
+	while( !file.eof() ){
+		file>>newProduct;
+
+		if( !newProduct.isEmpty() ){
+			this->products[++this->counterOfRegs] = newProduct;
+		}
+	}
+
+	file.close();
 }

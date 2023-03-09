@@ -1,6 +1,6 @@
 /**
 	@Autor: Hector Geovanny Rodriguez Martinez
-	@Time: 00:00:00
+	@Time: 00:14:00
 */
 
 
@@ -10,6 +10,7 @@
 
 
 using std::string;
+using std::endl;
 using std::to_string;
 
 
@@ -95,4 +96,51 @@ string Product::toString() const {
 	}
 
 	return aux;
+}
+
+//-------------------------------------------------------------------------------------------------- is empty
+bool Product::isEmpty() const {
+	return(
+		strlen(this->id) == 0 || this->name.compare("") == 0 || this->description.compare("") == 0
+	);
+}
+
+
+///------------------------------------------------------------------------------------------------- Operators
+//-------------------------------------------------------------------------------------------------- >>
+std::istream& operator >> (std::istream &is, Product &product) {
+	string aux = "";
+
+	// id
+	getline(is, aux, '|');
+	product.setId(aux.c_str());
+	// name
+	getline(is, aux, '|');
+	product.setName(aux);
+	// price
+	getline(is, aux, '|');
+	product.setPrice((float) stof(aux));
+	// description
+	getline(is, aux, '|');
+	product.setDescription(aux);
+	// weight
+	getline(is, aux, '|');
+	product.setWeightUnit(aux);
+	// is deleted
+	getline(is, aux, '\n');
+	product.setIsDeleted((bool) stoi(aux));
+
+	return is;
+}
+
+//-------------------------------------------------------------------------------------------------- <<
+std::ostream& operator << (std::ostream &os, Product &product) {
+	os<<product.getId()<<"|";
+	os<<product.getName()<<"|";
+	os<<to_string(product.getPrice())<<"|";
+	os<<product.getDescription()<<"|";
+	os<<product.getWeightUnit()<<"|";
+	os<<product.getIsDeleted()<<endl;
+
+	return os;
 }

@@ -1,6 +1,6 @@
 /**
 	@Autor: Hector Geovanny Rodriguez Martinez.
-	@Time: 00:00:00
+	@Time: 00:00:35
 */
 
 
@@ -38,8 +38,12 @@ class Product{
 		void setName(const std::string &name);
 		void setPrice(const float &price);
 		void setWeightUnit(const std::string &weightUnit);
+		bool isEmpty() const;
 
 		std::string toString() const;
+
+		friend std::istream &operator >> (std::istream &is, Product &product);
+		friend std::ostream &operator << (std::ostream &os, Product &product);
 };
 
 

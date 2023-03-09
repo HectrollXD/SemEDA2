@@ -1,6 +1,6 @@
 /**
 	@Autor: Hector Geovanny Rodriguez Martinez
-	@Time: 00:00:00
+	@Time: 00:00:10
 */
 
 #include <iostream>
@@ -37,6 +37,8 @@ class Management{
 		void deleteRegister(Product *prodToDelete, bool _delete(const bool &isToDelete));
 		int findProduct(const char id[MAX_CHARS_OF_ID]) const;
 		Product *recoverProduct(const int &posToRecover);
+		void saveRegistersToFile();
+		void readRegistersFromFile(const std::string &pathOfFile);
 };
 
 

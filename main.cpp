@@ -12,15 +12,27 @@
 using std::cout;
 using std::cin;
 using std::endl;
+using std::string;
 
 
-int main(){
+int main(int argc, char *argv[]){
 	setlocale(LC_CTYPE, "spanish");
+	string path = "";
 
 	try{
 		Program *program = new Program();
 
-		program->insertWithBuffer();
+		cout<<argc<<endl;
+
+		if( argc > 1 ){
+			for( int i=1; i<argc; i++){
+				path = argv[i];
+				cout<<path<<endl;
+
+				program->readFileLPerL(path);
+			}
+		}
+		std::cin.ignore(1);
 
 		program->principal();
 	}

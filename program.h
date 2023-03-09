@@ -36,8 +36,10 @@ class Program{
 		// Setters
 		void setManagementList(Management &mng);
 		// Methods
+		void readFileCPerC(const std::string &pathOfFile); // char per char
+		void readFileLPerL(const std::string &pathOfFile); // line per line
+		void saveRegisters();
 		void principal();
-		void insertWithBuffer();
 };
 
 
