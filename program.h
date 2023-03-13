@@ -17,14 +17,15 @@ class Program{
 
 	protected:
 		//Methods
-		char printMenu() const;
 		void addProductOption();
-		void showProductsOption();
-		void findProductOption();
 		void deleteProductOption();
-		void pauseProgram();
-		void invalidOption();
+		void findProductOption();
 		static bool inCaseOfExisting(const bool &isToDelete);
+		void invalidOption();
+		void pauseProgram();
+		char printMenu() const;
+		void saveRegisters();
+		void showProductsOption();
 
 	public:
 		// Constructor
@@ -36,9 +37,7 @@ class Program{
 		// Setters
 		void setManagementList(Management &mng);
 		// Methods
-		void readFileCPerC(const std::string &pathOfFile); // char per char
-		void readFileLPerL(const std::string &pathOfFile); // line per line
-		void saveRegisters();
+		void methodToReadFile(const std::string &path);
 		void principal();
 };
 

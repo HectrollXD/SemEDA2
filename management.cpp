@@ -14,6 +14,7 @@ using std::string;
 using std::istream;
 using std::ofstream;
 using std::ifstream;
+using std::endl;
 
 
 ///------------------------------------------------------------------------------------------------- Constructor
@@ -156,13 +157,30 @@ Product* Management::recoverProduct(const int& posToRecover){
 	return nullptr;
 }
 
-//--------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------- save all registers
 void Management::saveRegistersToFile() {
+	int i = 0;
+	ofstream file;
 
+	file.open(OUT_FILE_PATH, ofstream::out);
+
+	if( !file.is_open() ){
+		throw("No fue posible crear el archivo.");
+	}
+
+	while( i <= this->counterOfRegs ){
+		if( !this->products[i].isEmpty() ){
+			file<<this->products[i]<<endl;
+		}
+
+		i++;
+	}
+
+	file.close();
 }
 
-//--------------------------------------------------------------------------------------------------
-void Management::readRegistersFromFile(const string &pathOfFile) {
+//-------------------------------------------------------------------------------------------------- line per line
+void Management::readRegistersFromFileLXL(const string &pathOfFile) {
 	Product newProduct;
 	ifstream file;
 	string aux;
@@ -178,6 +196,33 @@ void Management::readRegistersFromFile(const string &pathOfFile) {
 
 		if( !newProduct.isEmpty() ){
 			this->products[++this->counterOfRegs] = newProduct;
+		}
+	}
+
+	file.close();
+}
+
+//-------------------------------------------------------------------------------------------------- character per character
+void Management::readRegistersFromFileCXC(const string &pathOfFile) {
+	char readingChar;
+	ifstream file;
+	string aux;
+
+	file.open(pathOfFile, ifstream::in);
+
+	if( !file.is_open() ){
+		throw("No fue posible encontrar el archivo " + pathOfFile);
+	}
+
+	while( file.get(readingChar) ){
+		switch(readingChar){
+			case '\n':
+				this->products[++this->counterOfRegs] = Product::fromString(aux);
+				aux = "";
+				break;
+			default:
+				aux += readingChar;
+				break;
 		}
 	}
 

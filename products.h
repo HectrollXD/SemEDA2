@@ -41,6 +41,7 @@ class Product{
 		bool isEmpty() const;
 
 		std::string toString() const;
+		static Product fromString(const std::string &product);
 
 		friend std::istream &operator >> (std::istream &is, Product &product);
 		friend std::ostream &operator << (std::ostream &os, Product &product);

@@ -98,6 +98,38 @@ string Product::toString() const {
 	return aux;
 }
 
+//-------------------------------------------------------------------------------------------------- from string
+Product Product::fromString(const string& product) {
+	Product newProduct;
+	string productCpy(product), aux = "";
+	int posOfChar;
+
+	posOfChar = productCpy.find_first_of("|");
+	aux = productCpy.substr(0, posOfChar);
+	productCpy.erase(0, posOfChar+1);
+	newProduct.setId(aux.c_str());
+	posOfChar = productCpy.find_first_of("|");
+	aux = productCpy.substr(0, posOfChar);
+	productCpy.erase(0, posOfChar+1);
+	newProduct.name = aux;
+	posOfChar = productCpy.find_first_of("|");
+	aux = productCpy.substr(0, posOfChar);
+	productCpy.erase(0, posOfChar+1);
+	newProduct.price = (float) stof(aux);
+	posOfChar = productCpy.find_first_of("|");
+	aux = productCpy.substr(0, posOfChar);
+	productCpy.erase(0, posOfChar+1);
+	newProduct.description = aux;
+	posOfChar = productCpy.find_first_of("|");
+	aux = productCpy.substr(0, posOfChar);
+	productCpy.erase(0, posOfChar+1);
+	newProduct.weightUnit = aux;
+	newProduct.isDeleted = (bool) stoi(productCpy);
+
+	return newProduct;
+}
+
+
 //-------------------------------------------------------------------------------------------------- is empty
 bool Product::isEmpty() const {
 	return(
@@ -119,7 +151,9 @@ std::istream& operator >> (std::istream &is, Product &product) {
 	product.setName(aux);
 	// price
 	getline(is, aux, '|');
-	product.setPrice((float) stof(aux));
+	if( aux != "" ){
+		product.setPrice((float) stof(aux));
+	}
 	// description
 	getline(is, aux, '|');
 	product.setDescription(aux);
@@ -128,7 +162,9 @@ std::istream& operator >> (std::istream &is, Product &product) {
 	product.setWeightUnit(aux);
 	// is deleted
 	getline(is, aux, '\n');
-	product.setIsDeleted((bool) stoi(aux));
+	if( aux != "" ){
+		product.setIsDeleted((bool) stoi(aux));
+	}
 
 	return is;
 }
@@ -140,7 +176,7 @@ std::ostream& operator << (std::ostream &os, Product &product) {
 	os<<to_string(product.getPrice())<<"|";
 	os<<product.getDescription()<<"|";
 	os<<product.getWeightUnit()<<"|";
-	os<<product.getIsDeleted()<<endl;
+	os<<product.getIsDeleted();
 
 	return os;
 }

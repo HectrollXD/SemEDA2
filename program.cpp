@@ -41,13 +41,13 @@ Program::~Program() {
 }
 
 ///------------------------------------------------------------------------------------------------- Getters
-//--------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------- management list
 const Management* Program::getManagementList(){
 	return this->managementList;
 }
 
 ///------------------------------------------------------------------------------------------------- Setters
-//--------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------- management list
 void Program::setManagementList(Management& mng){
 	int i = 0;
 
@@ -70,7 +70,7 @@ void Program::setManagementList(Management& mng){
 
 
 ///------------------------------------------------------------------------------------------------- Methods
-//--------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------- print menu
 char Program::printMenu() const {
 	char option = '\0';
 
@@ -90,7 +90,7 @@ char Program::printMenu() const {
 	return toupper(option);
 }
 
-//--------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------- add option
 void Program::addProductOption() {
 	string aux = "";
 	Product product;
@@ -129,7 +129,7 @@ void Program::addProductOption() {
 	pauseProgram();
 }
 
-//--------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------- show option
 void Program::showProductsOption() {
 	cout<<"Todos los registros."<<endl<<endl;
 
@@ -143,7 +143,7 @@ void Program::showProductsOption() {
 	pauseProgram();
 }
 
-//--------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------- find option
 void Program::findProductOption() {
 	char idToFind[MAX_CHARS_OF_ID];
 	Product *posOfProduct = nullptr;
@@ -175,7 +175,7 @@ void Program::findProductOption() {
 	pauseProgram();
 }
 
-//--------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------- delete option
 void Program::deleteProductOption() {
 	char idToFind[MAX_CHARS_OF_ID];
 	Product *posOfProduct = nullptr;
@@ -215,20 +215,21 @@ void Program::deleteProductOption() {
 	pauseProgram();
 }
 
-//--------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------- pause program
 void Program::pauseProgram() {
 	cout<<"presiona entrar para continuar...";
 	cin.ignore(1);
 	system(CLEAR);
 }
 
-//--------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------- invalid option
 void Program::invalidOption() {
 	cout<<"Opción inválida."<<endl;
 	pauseProgram();
 }
 
-//--------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------- in case of existing register
+// Static function to send a option menu for the add function in management class
 bool Program::inCaseOfExisting(const bool &isToDelete){
 	char option = '\0';
 	string title = "El ID ingresado ya existe en los registros.";
@@ -250,29 +251,51 @@ bool Program::inCaseOfExisting(const bool &isToDelete){
 	return false;
 }
 
-//-------------------------------------------------------------------------------------------------- read file character per character
-void Program::readFileCPerC(const string& pathOfFile) {
-	//TODO: Terminar la lectura de caracter por caracter.
-}
-
-//-------------------------------------------------------------------------------------------------- read file line per line
-void Program::readFileLPerL(const string& pathOfFile) {
-	try{
-		this->managementList->readRegistersFromFile(pathOfFile);
-	}
-	catch( const char *ex ){
-		cout<<ex<<endl;
-	}
-
-	pauseProgram();
-}
-
 //-------------------------------------------------------------------------------------------------- save registers to file
 void Program::saveRegisters() {
+	char option = '\0';
 
+	cout<<"¿Desea guardar los registros? [S / N]: ";
+	cin>>option;
+	cin.ignore(1);
+	option = toupper(option);
+
+	if( option == 'S' ){
+		try{
+			this->managementList->saveRegistersToFile();
+		}
+		catch(const char *ex){
+			cout<<ex<<endl;
+			pauseProgram();
+		}
+	}
 }
 
-//-------------------------------------------------------------------------------------------------- principal logig
+//-------------------------------------------------------------------------------------------------- method to read file
+void Program::methodToReadFile(const string &path) {
+	char option = '\0';
+
+	cout<<"Archivo: " + path<<endl<<endl;
+	cout<<"¿Desea elegir el método de lectura del archivo de linea por linea? [S / N]: ";
+	cin>>option;
+	cin.ignore(1);
+	option = toupper(option);
+
+	try{
+		if( option == 'S' ){
+			this->managementList->readRegistersFromFileLXL(path);
+		}
+		else{
+			this->managementList->readRegistersFromFileCXC(path);
+		}
+	}
+	catch(const char *ex){
+		cout<<ex<<endl;
+		pauseProgram();
+	}
+}
+
+//-------------------------------------------------------------------------------------------------- principal logic
 void Program::principal() {
 	char option = '\0';
 
@@ -293,6 +316,7 @@ void Program::principal() {
 				deleteProductOption();
 				break;
 			case EXIT:
+				saveRegisters();
 				break;
 			default:
 				invalidOption();

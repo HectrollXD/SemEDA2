@@ -11,6 +11,7 @@
 #define MANAGEMENT_H_INCLUDED
 
 #define MAX_REGS 50
+#define OUT_FILE_PATH "./files/registros.txt"
 
 
 class Management{
@@ -38,7 +39,8 @@ class Management{
 		int findProduct(const char id[MAX_CHARS_OF_ID]) const;
 		Product *recoverProduct(const int &posToRecover);
 		void saveRegistersToFile();
-		void readRegistersFromFile(const std::string &pathOfFile);
+		void readRegistersFromFileLXL(const std::string &pathOfFile);
+		void readRegistersFromFileCXC(const std::string &pathOfFile);
 };
 
 

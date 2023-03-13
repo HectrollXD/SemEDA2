@@ -10,7 +10,6 @@
 
 
 using std::cout;
-using std::cin;
 using std::endl;
 using std::string;
 
@@ -22,17 +21,13 @@ int main(int argc, char *argv[]){
 	try{
 		Program *program = new Program();
 
-		cout<<argc<<endl;
-
 		if( argc > 1 ){
 			for( int i=1; i<argc; i++){
 				path = argv[i];
-				cout<<path<<endl;
 
-				program->readFileLPerL(path);
+				program->methodToReadFile(path);
 			}
 		}
-		std::cin.ignore(1);
 
 		program->principal();
 	}
