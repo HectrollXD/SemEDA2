@@ -1,6 +1,6 @@
 /**
 	@Autor: Hector Geovanny Rodriguez Martinez
-	@Time: 00:00:10
+	@Time: 00:02:00
 */
 
 #include <iostream>
@@ -11,7 +11,7 @@
 #define MANAGEMENT_H_INCLUDED
 
 #define MAX_REGS 50
-#define OUT_FILE_PATH "./files/registros.txt"
+#define OUT_FILE_PATH "./files/registros_v1.txt"
 
 
 class Management{

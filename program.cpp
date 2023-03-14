@@ -1,6 +1,6 @@
 /**
 	@Autor: Hector Geovanny Rodriguez Martinez
-	@Time: 00:01:00
+	@Time: 00:20:00
 */
 
 #include "program.h"

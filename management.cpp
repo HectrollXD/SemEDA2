@@ -14,7 +14,6 @@ using std::string;
 using std::istream;
 using std::ofstream;
 using std::ifstream;
-using std::endl;
 
 
 ///------------------------------------------------------------------------------------------------- Constructor
@@ -170,7 +169,7 @@ void Management::saveRegistersToFile() {
 
 	while( i <= this->counterOfRegs ){
 		if( !this->products[i].isEmpty() ){
-			file<<this->products[i]<<endl;
+			file<<this->products[i];
 		}
 
 		i++;
@@ -192,11 +191,30 @@ void Management::readRegistersFromFileLXL(const string &pathOfFile) {
 	}
 
 	while( !file.eof() ){
-		file>>newProduct;
+		getline(file, aux, '\n');
 
-		if( !newProduct.isEmpty() ){
-			this->products[++this->counterOfRegs] = newProduct;
+		if( aux.length() < 1){
+			break;
 		}
+		// set ID
+		newProduct.setId(aux.c_str());
+		// set name
+		getline(file, aux, '\n');
+		newProduct.setName(aux);
+		// set price
+		getline(file, aux, '\n');
+		newProduct.setPrice((float) stof(aux));
+		// set description
+		getline(file, aux, '\n');
+		newProduct.setDescription(aux);
+		// set weight
+		getline(file, aux, '\n');
+		newProduct.setWeightUnit(aux);
+		// set is deleted
+		getline(file, aux, '\n');
+		newProduct.setIsDeleted((bool) stoi(aux));
+
+		this->products[++this->counterOfRegs] = newProduct;
 	}
 
 	file.close();
@@ -204,9 +222,10 @@ void Management::readRegistersFromFileLXL(const string &pathOfFile) {
 
 //-------------------------------------------------------------------------------------------------- character per character
 void Management::readRegistersFromFileCXC(const string &pathOfFile) {
+	Product newProduct;
 	char readingChar;
 	ifstream file;
-	string aux;
+	string aux = "";
 
 	file.open(pathOfFile, ifstream::in);
 
@@ -214,16 +233,49 @@ void Management::readRegistersFromFileCXC(const string &pathOfFile) {
 		throw("No fue posible encontrar el archivo " + pathOfFile);
 	}
 
-	while( file.get(readingChar) ){
-		switch(readingChar){
-			case '\n':
-				this->products[++this->counterOfRegs] = Product::fromString(aux);
-				aux = "";
-				break;
-			default:
-				aux += readingChar;
-				break;
+	while( !file.eof() ){
+		while( file.get(readingChar) && readingChar != '\n' ){
+			aux += readingChar;
 		}
+
+		if( aux.length() < 1 ){
+			break;
+		}
+		// set ID
+		newProduct.setId(aux.c_str());
+		aux = "";
+		// set name
+		while( file.get(readingChar) && readingChar != '\n' ){
+			aux += readingChar;
+		}
+		newProduct.setName(aux);
+		aux = "";
+		// set price
+		while( file.get(readingChar) && readingChar != '\n' ){
+			aux += readingChar;
+		}
+		newProduct.setPrice((float) stof(aux));
+		aux = "";
+		// set description
+		while( file.get(readingChar) && readingChar != '\n' ){
+			aux += readingChar;
+		}
+		newProduct.setDescription(aux);
+		aux = "";
+		// set weight
+		while( file.get(readingChar) && readingChar != '\n' ){
+			aux += readingChar;
+		}
+		newProduct.setWeightUnit(aux);
+		aux = "";
+		// set is deleted
+		while( file.get(readingChar) && readingChar != '\n' ){
+			aux += readingChar;
+		}
+		newProduct.setIsDeleted((bool) stoi(aux));
+		aux = "";
+
+		this->products[++this->counterOfRegs] = newProduct;
 	}
 
 	file.close();

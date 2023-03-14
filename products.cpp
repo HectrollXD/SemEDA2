@@ -1,6 +1,6 @@
 /**
 	@Autor: Hector Geovanny Rodriguez Martinez
-	@Time: 00:14:00
+	@Time: 00:10:00
 */
 
 
@@ -171,12 +171,12 @@ std::istream& operator >> (std::istream &is, Product &product) {
 
 //-------------------------------------------------------------------------------------------------- <<
 std::ostream& operator << (std::ostream &os, Product &product) {
-	os<<product.getId()<<"|";
-	os<<product.getName()<<"|";
-	os<<to_string(product.getPrice())<<"|";
-	os<<product.getDescription()<<"|";
-	os<<product.getWeightUnit()<<"|";
-	os<<product.getIsDeleted();
+	os<<product.getId()<<endl;
+	os<<product.getName()<<endl;
+	os<<to_string(product.getPrice())<<endl;
+	os<<product.getDescription()<<endl;
+	os<<product.getWeightUnit()<<endl;
+	os<<product.getIsDeleted()<<endl;
 
 	return os;
 }
