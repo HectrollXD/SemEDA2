@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
+#include <fstream>
 #include "products.h"
 
 
@@ -24,6 +25,7 @@ enum {ADD = 'A', SHOW_ALL, FIND, DELETE, EXIT};
 
 void addRegister(Product *array[MAX_REGS], short &counterRegs);
 void showAllRegisters(Product *array[MAX_REGS], short &counterRegs);
+Product *stringToProduct(const string &product);
 void findProduct(Product *array[MAX_REGS], short &counterRegs);
 short findByID(
 	Product *array[MAX_REGS], short &counterRegs, const char idToFind[MAX_CHARS_OF_ID]
@@ -35,6 +37,10 @@ void pauseProgram();
 void invalidOption();
 void principalProgram(Product *array[MAX_REGS], short &counterRegs);
 void printProduct(Product *product);
+void methodToReadFile(Product *array[MAX_REGS], short &counterRegs, const string &path);
+void readFileLinePerLine(Product *array[MAX_REGS], short &counterRegs, const string &path);
+void readFileCharPerChar(Product *array[MAX_REGS], short &counterRegs, const string &path);
+void saveRegisters(Product *array[MAX_REGS], short &counterRegs);
 
 
 void color(){
@@ -43,7 +49,7 @@ void color(){
 	}
 }
 
-//--------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------- prin an product.
 void printProduct(Product *product){
 	if( ! product->isDeleted ){
 		std::cout<<"Producto: "<<product->id;
@@ -55,8 +61,38 @@ void printProduct(Product *product){
 	}
 }
 
-
 //--------------------------------------------------------------------------------------------------
+Product *stringToProduct(const string &product){
+	Product *newProduct = new Product;
+	string productCpy(product), aux = "";
+	int posOfChar;
+
+	posOfChar = productCpy.find_first_of("|");
+	aux = productCpy.substr(0, posOfChar);
+	productCpy.erase(0, posOfChar+1);
+	strcpy(newProduct->id, aux.c_str());
+	posOfChar = productCpy.find_first_of("|");
+	aux = productCpy.substr(0, posOfChar);
+	productCpy.erase(0, posOfChar+1);
+	newProduct->name = aux;
+	posOfChar = productCpy.find_first_of("|");
+	aux = productCpy.substr(0, posOfChar);
+	productCpy.erase(0, posOfChar+1);
+	newProduct->price = (float) stof(aux);
+	posOfChar = productCpy.find_first_of("|");
+	aux = productCpy.substr(0, posOfChar);
+	productCpy.erase(0, posOfChar+1);
+	newProduct->description = aux;
+	posOfChar = productCpy.find_first_of("|");
+	aux = productCpy.substr(0, posOfChar);
+	productCpy.erase(0, posOfChar+1);
+	newProduct->weightUnit = aux;
+	newProduct->isDeleted = (bool) stoi(productCpy);
+
+	return newProduct;
+}
+
+//-------------------------------------------------------------------------------------------------- add new register
 void addRegister(Product *array[MAX_REGS], short &counterRegs){
 	Product *product = new Product;
 	short regExistPos = -1, insertInPos = -1;
@@ -118,7 +154,7 @@ void addRegister(Product *array[MAX_REGS], short &counterRegs){
 	pauseProgram();
 }
 
-//--------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------- show all products
 void showAllRegisters(Product *array[MAX_REGS], short &counterRegs){
 	short i = 0;
 
@@ -137,7 +173,7 @@ void showAllRegisters(Product *array[MAX_REGS], short &counterRegs){
 	pauseProgram();
 }
 
-//--------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------- find product
 void findProduct(Product *array[MAX_REGS], short &counterRegs){
 	char idToFind[MAX_CHARS_OF_ID];
 	short posOfFind;
@@ -167,7 +203,7 @@ void findProduct(Product *array[MAX_REGS], short &counterRegs){
 	pauseProgram();
 }
 
-//--------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------- find by ID
 short findByID(
 	Product *array[MAX_REGS], short &counterRegs, const char idToFind[MAX_CHARS_OF_ID]
 ){
@@ -183,7 +219,7 @@ short findByID(
 	return -1;
 }
 
-//--------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------- delete register
 void deleteRegister(Product *array[MAX_REGS], short &counterRegs){
 	char idToFind[MAX_CHARS_OF_ID];
 	char option = '\0';
@@ -226,7 +262,7 @@ void deleteRegister(Product *array[MAX_REGS], short &counterRegs){
 	pauseProgram();
 }
 
-//--------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------- print menu
 char printMenu(){
 	char option = '\0';
 
@@ -248,20 +284,114 @@ char printMenu(){
 	return toupper(option);
 }
 
-//--------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------- pause program
 void pauseProgram(){
 	cout<<"presiona entrar para continuar...";
 	cin.ignore(1);
 	system(CLEAR);
 }
 
-//--------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------- invalid option
 void invalidOption(){
 	cout<<"Opcion invalida."<<endl;
 	pauseProgram();
 }
 
-//--------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------- read from file.
+void methodToReadFile(Product *array[MAX_REGS], short &counterRegs, const string &path){
+	char option = '\0';
+
+	cout<<"Archivo: " + path<<endl<<endl;
+	cout<<"¿Desea elegir el método de lectura del archivo de linea por linea? [S / N]: ";
+	cin>>option;
+	cin.ignore(1);
+	option = toupper(option);
+
+	try{
+		if( option == 'S' ){
+			readFileLinePerLine(array, counterRegs, path);
+		}
+		else{
+			readFileCharPerChar(array, counterRegs, path);
+		}
+	}
+	catch( const char *ex ){
+		cout<<ex<<endl;
+		pauseProgram();
+	}
+}
+
+//-------------------------------------------------------------------------------------------------- read file line per line.
+void readFileLinePerLine(Product *array[MAX_REGS], short &counterRegs, const string &path) {
+	ifstream file;
+	string aux;
+
+	file.open(path, ifstream::in);
+
+	if( !file.is_open() ){
+		throw("No fue posible encontrar el archivo " + path);
+	}
+
+	while( !file.eof() ){
+		getline(file, aux, '\n');
+
+		if( !(aux.compare("") == 0) ){
+			array[++counterRegs] = stringToProduct(aux);
+		}
+	}
+
+	file.close();
+}
+
+//-------------------------------------------------------------------------------------------------- read file line per line.
+void readFileCharPerChar(Product *array[MAX_REGS], short &counterRegs, const string &path) {
+	char readingChar;
+	ifstream file;
+	string aux;
+
+	file.open(path, ifstream::in);
+
+	if( !file.is_open() ){
+		throw("No fue posible encontrar el archivo " + path);
+	}
+
+	while( file.get(readingChar) ){
+		switch(readingChar){
+			case '\n':
+				array[++counterRegs] = stringToProduct(aux);
+				aux = "";
+				break;
+			default:
+				aux += readingChar;
+				break;
+		}
+	}
+
+	file.close();
+}
+
+// TODO: Terminar la parte de guardar
+//-------------------------------------------------------------------------------------------------- save registers into file.
+void saveRegisters(Product *array[MAX_REGS], short &counterRegs){
+	char option = '\0';
+
+	cout<<"¿Desea guardar los registros? [S / N]: ";
+	cin>>option;
+	cin.ignore(1);
+	option = toupper(option);
+
+	if( option == 'S' ){
+		try{
+			this->managementList->saveRegistersToFile();
+		}
+		catch(const char *ex){
+			cout<<ex<<endl;
+			pauseProgram();
+		}
+	}
+}
+
+//-------------------------------------------------------------------------------------------------- principal program
 void principalProgram(Product *array[MAX_REGS], short &counterRegs){
 	char option = '\0';
 	do{
