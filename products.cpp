@@ -1,6 +1,6 @@
 /**
 	@Autor: Hector Geovanny Rodriguez Martinez
-	@Time: 00:14:00
+	@Time: 00:10:00
 */
 
 

@@ -183,7 +183,6 @@ void Management::saveRegistersToFile() {
 void Management::readRegistersFromFileLXL(const string &pathOfFile) {
 	Product newProduct;
 	ifstream file;
-	string aux;
 
 	file.open(pathOfFile, ifstream::in);
 
