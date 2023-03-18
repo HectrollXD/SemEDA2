@@ -20,12 +20,14 @@ using namespace std;
 	#define IS_WINDOWS false
 #endif // _WIN32
 #define MAX_REGS 50
+#define OUT_FILE_PATH "./files/registros_v2.txt"
 enum {ADD = 'A', SHOW_ALL, FIND, DELETE, EXIT};
 
 
 void addRegister(Product *array[MAX_REGS], short &counterRegs);
 void showAllRegisters(Product *array[MAX_REGS], short &counterRegs);
 Product *stringToProduct(const string &product);
+string registerToString(Product *product);
 void findProduct(Product *array[MAX_REGS], short &counterRegs);
 short findByID(
 	Product *array[MAX_REGS], short &counterRegs, const char idToFind[MAX_CHARS_OF_ID]
@@ -41,6 +43,7 @@ void methodToReadFile(Product *array[MAX_REGS], short &counterRegs, const string
 void readFileLinePerLine(Product *array[MAX_REGS], short &counterRegs, const string &path);
 void readFileCharPerChar(Product *array[MAX_REGS], short &counterRegs, const string &path);
 void saveRegisters(Product *array[MAX_REGS], short &counterRegs);
+void saveRegistersToFile(Product *array[MAX_REGS], short &counterRegs);
 
 
 void color(){
@@ -61,7 +64,7 @@ void printProduct(Product *product){
 	}
 }
 
-//--------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------- product to string
 Product *stringToProduct(const string &product){
 	Product *newProduct = new Product;
 	string productCpy(product), aux = "";
@@ -90,6 +93,26 @@ Product *stringToProduct(const string &product){
 	newProduct->isDeleted = (bool) stoi(productCpy);
 
 	return newProduct;
+}
+
+//-------------------------------------------------------------------------------------------------- register to string
+string registerToString(Product *product){
+	string aux = "";
+
+	aux += product->id;
+	aux += "|";
+	aux += product->name;
+	aux += "|";
+	aux += to_string(product->price);
+	aux += "|";
+	aux += product->description;
+	aux += "|";
+	aux += product->weightUnit;
+	aux += "|";
+	aux += to_string((int)product->isDeleted);
+	aux += "\n";
+
+	return aux;
 }
 
 //-------------------------------------------------------------------------------------------------- add new register
@@ -370,7 +393,6 @@ void readFileCharPerChar(Product *array[MAX_REGS], short &counterRegs, const str
 	file.close();
 }
 
-// TODO: Terminar la parte de guardar
 //-------------------------------------------------------------------------------------------------- save registers into file.
 void saveRegisters(Product *array[MAX_REGS], short &counterRegs){
 	char option = '\0';
@@ -382,13 +404,34 @@ void saveRegisters(Product *array[MAX_REGS], short &counterRegs){
 
 	if( option == 'S' ){
 		try{
-			this->managementList->saveRegistersToFile();
+			saveRegistersToFile(array, counterRegs);
 		}
 		catch(const char *ex){
 			cout<<ex<<endl;
 			pauseProgram();
 		}
 	}
+}
+
+//-------------------------------------------------------------------------------------------------- save registers to file.
+void saveRegistersToFile(Product *array[MAX_REGS], short &counterRegs){
+	int i = 0;
+	ofstream file;
+
+	file.open(OUT_FILE_PATH, ofstream::out);
+
+	if( !file.is_open() ){
+		throw("No fue posible crear el archivo.");
+	}
+
+	while( i <= counterRegs ){
+
+		file<<registerToString(array[i]);
+
+		i++;
+	}
+
+	file.close();
 }
 
 //-------------------------------------------------------------------------------------------------- principal program
@@ -411,6 +454,7 @@ void principalProgram(Product *array[MAX_REGS], short &counterRegs){
 				deleteRegister(array, counterRegs);
 				break;
 			case EXIT:
+				saveRegisters(array, counterRegs);
 				break;
 			default:
 				invalidOption();
