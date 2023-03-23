@@ -100,15 +100,15 @@ string registerToString(Product *product){
 	string aux = "";
 
 	aux += product->id;
-	aux += "|";
+	aux += "\n";
 	aux += product->name;
-	aux += "|";
+	aux += "\n";
 	aux += to_string(product->price);
-	aux += "|";
+	aux += "\n";
 	aux += product->description;
-	aux += "|";
+	aux += "\n";
 	aux += product->weightUnit;
-	aux += "|";
+	aux += "\n";
 	aux += to_string((int)product->isDeleted);
 	aux += "\n";
 
@@ -346,6 +346,7 @@ void methodToReadFile(Product *array[MAX_REGS], short &counterRegs, const string
 
 //-------------------------------------------------------------------------------------------------- read file line per line.
 void readFileLinePerLine(Product *array[MAX_REGS], short &counterRegs, const string &path) {
+	Product *newProduct = new Product();
 	ifstream file;
 	string aux;
 
@@ -358,19 +359,39 @@ void readFileLinePerLine(Product *array[MAX_REGS], short &counterRegs, const str
 	while( !file.eof() ){
 		getline(file, aux, '\n');
 
-		if( !(aux.compare("") == 0) ){
-			array[++counterRegs] = stringToProduct(aux);
+		if( aux.length() < 1){
+			break;
 		}
+		// set ID
+		strcpy(newProduct->id, aux.c_str());
+		// set name
+		getline(file, aux, '\n');
+		newProduct->name = aux;
+		// set price
+		getline(file, aux, '\n');
+		newProduct->price = (float) stof(aux);
+		// set description
+		getline(file, aux, '\n');
+		newProduct->description = aux;
+		// set weight
+		getline(file, aux, '\n');
+		newProduct->weightUnit = aux;
+		// set is deleted
+		getline(file, aux, '\n');
+		newProduct->isDeleted = (bool) stoi(aux);
+
+		array[++counterRegs] = newProduct;
 	}
 
 	file.close();
 }
 
-//-------------------------------------------------------------------------------------------------- read file line per line.
+//-------------------------------------------------------------------------------------------------- read file char per char.
 void readFileCharPerChar(Product *array[MAX_REGS], short &counterRegs, const string &path) {
+	Product *newProduct = new Product();
 	char readingChar;
 	ifstream file;
-	string aux;
+	string aux = "";
 
 	file.open(path, ifstream::in);
 
@@ -378,16 +399,49 @@ void readFileCharPerChar(Product *array[MAX_REGS], short &counterRegs, const str
 		throw("No fue posible encontrar el archivo " + path);
 	}
 
-	while( file.get(readingChar) ){
-		switch(readingChar){
-			case '\n':
-				array[++counterRegs] = stringToProduct(aux);
-				aux = "";
-				break;
-			default:
-				aux += readingChar;
-				break;
+	while( !file.eof() ){
+		while( file.get(readingChar) && readingChar != '\n' ){
+			aux += readingChar;
 		}
+
+		if( aux.length() < 1 ){
+			break;
+		}
+		// set ID
+		strcpy(newProduct->id, aux.c_str());
+		aux = "";
+		// set name
+		while( file.get(readingChar) && readingChar != '\n' ){
+			aux += readingChar;
+		}
+		newProduct->name = aux;
+		aux = "";
+		// set price
+		while( file.get(readingChar) && readingChar != '\n' ){
+			aux += readingChar;
+		}
+		newProduct->price = (float) stof(aux);
+		aux = "";
+		// set description
+		while( file.get(readingChar) && readingChar != '\n' ){
+			aux += readingChar;
+		}
+		newProduct->description = aux;
+		aux = "";
+		// set weight
+		while( file.get(readingChar) && readingChar != '\n' ){
+			aux += readingChar;
+		}
+		newProduct->weightUnit = aux;
+		aux = "";
+		// set is deleted
+		while( file.get(readingChar) && readingChar != '\n' ){
+			aux += readingChar;
+		}
+		newProduct->isDeleted = (bool) stoi(aux);
+		aux = "";
+
+		array[++counterRegs] = newProduct;
 	}
 
 	file.close();
