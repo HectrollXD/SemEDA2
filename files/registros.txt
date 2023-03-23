@@ -1,0 +1,42 @@
+0000000001
+manzanas
+45.200001
+manzanas rojas
+KG
+0
+0000000002
+mazanas 2
+42.000000
+manzanas verdes
+KG
+0
+0000000003
+uvas
+48.000000
+uvas sin semilla
+KG
+0
+0000000004
+melon
+100.000000
+melon chino
+KG
+0
+0000000005
+coco
+40.000000
+la playa
+PIEZA
+1
+0000000006
+CIRUELAS
+87.000000
+CIRUELA LAXANTE NATURAL
+KG
+0
+adsf
+adf
+345.000000
+asdf
+adsf
+0

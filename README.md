@@ -25,5 +25,5 @@ Con g++:
 ## Ejecutar el programa.
 Asumiendo que se está posicionado en la ruta raíz del proyecto.
 ``` bash
-    ./bin/admin_system ./files/registros.txt
+    ./bin/admin_system ./files/registros_v1.txt
 ```
