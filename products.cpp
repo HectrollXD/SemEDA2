@@ -20,12 +20,12 @@ Product::Product() : isDeleted(false) {}
 
 ///------------------------------------------------------------------------------------------------- Getters
 //-------------------------------------------------------------------------------------------------- name
-string Product::getDescription() const {
+const char *Product::getDescription() {
 	return this->description;
 }
 
 //-------------------------------------------------------------------------------------------------- id
-const char* Product::getId() {
+const char *Product::getId() {
 	return this->id;
 }
 
@@ -35,7 +35,7 @@ bool Product::getIsDeleted() const {
 }
 
 //-------------------------------------------------------------------------------------------------- name
-string Product::getName() const {
+const char *Product::getName(){
 	return this->name;
 }
 
@@ -45,14 +45,14 @@ float Product::getPrice() const {
 }
 
 //-------------------------------------------------------------------------------------------------- weight unit
-string Product::getWeightUnit() const {
+const char *Product::getWeightUnit() {
 	return this->weightUnit;
 }
 
 ///------------------------------------------------------------------------------------------------- Setters
 //-------------------------------------------------------------------------------------------------- description
-void Product::setDescription(const std::string& description) {
-	this->description = description;
+void Product::setDescription(const char description[MAX_CHARS_OF_DESCRIPTION]) {
+	strcpy(this->description, description);
 }
 
 //-------------------------------------------------------------------------------------------------- id
@@ -61,79 +61,114 @@ void Product::setId(const char id[MAX_CHARS_OF_ID]) {
 }
 
 //-------------------------------------------------------------------------------------------------- delete
-void Product::setIsDeleted(const bool& isDeleted) {
+void Product::setIsDeleted(const bool &isDeleted) {
 	this->isDeleted = isDeleted;
 }
 
 //-------------------------------------------------------------------------------------------------- name
-void Product::setName(const std::string& name) {
-	this->name = name;
+void Product::setName(const char name[MAX_CHARS_OF_NAME]) {
+	strcpy(this->name, name);
 }
 
 //-------------------------------------------------------------------------------------------------- price
-void Product::setPrice(const float& price) {
+void Product::setPrice(const float &price) {
 	this->price = price;
 }
 
 //-------------------------------------------------------------------------------------------------- weight unit
-void Product::setWeightUnit(const std::string& weightUnit) {
-	this->weightUnit = weightUnit;
+void Product::setWeightUnit(const char weightUnit[MAX_CHARS_OF_WU]) {
+	strcpy(this->weightUnit, weightUnit);
 }
 
 ///------------------------------------------------------------------------------------------------- Methods
-//-------------------------------------------------------------------------------------------------- to string
-string Product::toString() const {
-	string aux = "";
-	string id = this->id;
+//-------------------------------------------------------------------------------------------------- fill with spaces (string)
+string Product::fillWithSpaces(const string &str, const unsigned short &weight){
+	string strCpy = str;
+	unsigned short i = str.length();
 
-	if( ! this->isDeleted ){
-		aux += "Producto: " + id;
-		aux +=" ----------------------\n";
-		aux +="Nombre: " + this->name + " \n";
-		aux +="Precio: " + to_string(this->price) + " \n";
-		aux +="Descripcion: " + this->description + " \n";
-		aux +="Unidad de peso: " + this->weightUnit + " \n\n";
+	while( i < weight-1){
+		strCpy += ' ';
+		i++;
 	}
 
-	return aux;
+	strCpy += '\0';
+
+	return strCpy;
+}
+
+//-------------------------------------------------------------------------------------------------- fill with spaces (char)
+void Product::fillWithSpaces(char *str, const unsigned short &weight) {
+	unsigned short i = strlen(str);
+
+	while( i < weight-1){
+		str[i++] = ' ';
+	}
+
+	str[i++] = '\0';
+}
+
+//-------------------------------------------------------------------------------------------------- to string
+string Product::toString() const {
+	string prodString = "", aux = "";
+
+	if( ! this->isDeleted ){
+		aux = this->id;
+		prodString += "Producto: " + aux;
+		prodString +=" ----------------------\n";
+		aux = this->name;
+		prodString +="Nombre: " + aux + " \n";
+		prodString +="Precio: " + to_string(this->price) + " \n";
+		aux = this->description;
+		prodString +="Descripcion: " + aux + " \n";
+		aux = this->weightUnit;
+		prodString +="Unidad de peso: " + aux + " \n\n";
+	}
+
+	return prodString;
 }
 
 //-------------------------------------------------------------------------------------------------- from string
-Product Product::fromString(const string& product) {
-	Product newProduct;
+void Product::fromString(const string &product) {
 	string productCpy(product), aux = "";
 	int posOfChar;
 
+	// finding, set and delete ID
 	posOfChar = productCpy.find_first_of("|");
 	aux = productCpy.substr(0, posOfChar);
 	productCpy.erase(0, posOfChar+1);
-	newProduct.setId(aux.c_str());
+	this->setId(aux.c_str());
+	// finding, set and delete NAME
 	posOfChar = productCpy.find_first_of("|");
 	aux = productCpy.substr(0, posOfChar);
 	productCpy.erase(0, posOfChar+1);
-	newProduct.name = aux;
+	aux = fillWithSpaces(aux, MAX_CHARS_OF_NAME);
+	this->setName(aux.c_str());
+	// finding, set and delete PRICE
 	posOfChar = productCpy.find_first_of("|");
 	aux = productCpy.substr(0, posOfChar);
 	productCpy.erase(0, posOfChar+1);
-	newProduct.price = (float) stof(aux);
+	this->setPrice( (aux.length() > 0) ? (float) stof(aux) : 0.0);
+	// finding, set and delete DESCRIPTION
 	posOfChar = productCpy.find_first_of("|");
 	aux = productCpy.substr(0, posOfChar);
 	productCpy.erase(0, posOfChar+1);
-	newProduct.description = aux;
+	aux = fillWithSpaces(aux, MAX_CHARS_OF_DESCRIPTION);
+	this->setDescription(aux.c_str());
+	// finding, set and delete WEIGHT UNIT
 	posOfChar = productCpy.find_first_of("|");
 	aux = productCpy.substr(0, posOfChar);
 	productCpy.erase(0, posOfChar+1);
-	newProduct.weightUnit = aux;
-	newProduct.isDeleted = (bool) stoi(productCpy);
-
-	return newProduct;
+	aux = fillWithSpaces(aux, MAX_CHARS_OF_WU);
+	this->setWeightUnit(aux.c_str());
+	// set IS DELETE
+	this->setIsDeleted((productCpy.length() > 0) ? (bool) stoi(productCpy) : 0);
 }
 
 
 //-------------------------------------------------------------------------------------------------- is empty
 bool Product::isEmpty() const {
 	return(
-		strlen(this->id) == 0 || this->name.compare("") == 0 || this->description.compare("") == 0
+		strlen(this->id) == 0 || strcmp(this->name, "") == 0 || strcmp(this->description, "") == 0
 	);
 }
 
@@ -141,42 +176,25 @@ bool Product::isEmpty() const {
 ///------------------------------------------------------------------------------------------------- Operators
 //-------------------------------------------------------------------------------------------------- >>
 std::istream& operator >> (std::istream &is, Product &product) {
-	string aux = "";
+	string strProduct = "";
 
-	// id
-	getline(is, aux, '|');
-	product.setId(aux.c_str());
-	// name
-	getline(is, aux, '|');
-	product.setName(aux);
-	// price
-	getline(is, aux, '|');
-	if( aux != "" ){
-		product.setPrice((float) stof(aux));
-	}
-	// description
-	getline(is, aux, '|');
-	product.setDescription(aux);
-	// weight
-	getline(is, aux, '|');
-	product.setWeightUnit(aux);
-	// is deleted
-	getline(is, aux, '\n');
-	if( aux != "" ){
-		product.setIsDeleted((bool) stoi(aux));
-	}
+	getline(is, strProduct, '\n');
+	product.fromString(strProduct);
 
 	return is;
 }
 
 //-------------------------------------------------------------------------------------------------- <<
 std::ostream& operator << (std::ostream &os, Product &product) {
-	os<<product.getId()<<"|";
-	os<<product.getName()<<"|";
-	os<<to_string(product.getPrice())<<"|";
-	os<<product.getDescription()<<"|";
-	os<<product.getWeightUnit()<<"|";
-	os<<product.getIsDeleted();
+	char strProduct[MAX_STR_PRODUCT] = {};
+
+	sprintf(
+		strProduct, "%s|%s|%.2f|%s|%s|%i",
+		product.getId(), product.getName(), product.getPrice(), product.getDescription(),
+		product.getWeightUnit(), product.getIsDeleted()
+	);
+	Product::fillWithSpaces(strProduct, MAX_STR_PRODUCT);
+	os<<strProduct;
 
 	return os;
 }

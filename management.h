@@ -11,7 +11,7 @@
 #define MANAGEMENT_H_INCLUDED
 
 #define MAX_REGS 50
-#define OUT_FILE_PATH "./files/registros.txt"
+#define OUT_FILE_PATH "./files/registros.bin"
 
 
 class Management{

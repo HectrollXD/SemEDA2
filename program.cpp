@@ -3,9 +3,9 @@
 	@Time: 00:20:00
 */
 
-#include "program.h"
-
 #include <iostream>
+
+#include "program.h"
 #include "management.h"
 #include "products.h"
 
@@ -18,10 +18,10 @@
 enum {ADD = 'A', SHOW_ALL, FIND, DELETE, EXIT};
 
 
-using std::string;
 using std::cout;
 using std::cin;
 using std::endl;
+using std::string;
 using std::getline;
 
 
@@ -92,8 +92,10 @@ char Program::printMenu() const {
 
 //-------------------------------------------------------------------------------------------------- add option
 void Program::addProductOption() {
-	string aux = "";
 	Product product;
+	float price = 0;
+	char id[MAX_CHARS_OF_ID], name[MAX_CHARS_OF_NAME],
+		description[MAX_CHARS_OF_DESCRIPTION], weightUnit[MAX_CHARS_OF_WU];
 
 	cout<<"Agregar nuevo registro."<<endl<<endl;
 
@@ -101,21 +103,26 @@ void Program::addProductOption() {
 		cout<<"No es posible agregar un nuevo registro."<<endl<<endl;
 	}
 	else{
+		// TODO: Cambiar por char
 		cout<<"Código del producto: ";
-		getline(cin, aux, '\n');
-		product.setId(aux.c_str());
+		cin.getline(id, MAX_CHARS_OF_ID);
+		Product::fillWithSpaces(id, MAX_CHARS_OF_ID);
+		product.setId(id);
 		cout<<"Nombre del producto: ";
-		getline(cin, aux, '\n');
-		product.setName(aux);
+		cin.getline(name, MAX_CHARS_OF_NAME);
+		Product::fillWithSpaces(name, MAX_CHARS_OF_NAME);
+		product.setName(name);
 		cout<<"Precio del producto: ";
-		getline(cin, aux, '\n');
-		product.setPrice((float) stof(aux));
+		cin>>price;
+		product.setPrice(price);
 		cout<<"Descripción del producto: ";
-		getline(cin, aux, '\n');
-		product.setDescription(aux);
+		cin.getline(description, MAX_CHARS_OF_DESCRIPTION);
+		product.fillWithSpaces(description, MAX_CHARS_OF_DESCRIPTION);
+		product.setDescription(description);
 		cout<<"Unidad de peso del producto: ";
-		getline(cin, aux, '\n');
-		product.setWeightUnit(aux);
+		cin.getline(weightUnit, MAX_CHARS_OF_WU);
+		Product::fillWithSpaces(weightUnit, MAX_CHARS_OF_WU);
+		product.setWeightUnit(weightUnit);
 
 		try{
 			this->managementList->addRegister(product, Program::inCaseOfExisting);

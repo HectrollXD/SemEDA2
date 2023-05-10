@@ -66,19 +66,19 @@ string Management::toString() const{
 }
 
 //-------------------------------------------------------------------------------------------------- full
-// Verifica si la lista está llena
+// Verifica si la lista estÃ¡ llena
 bool Management::isFull() const {
 	return this->counterOfRegs == (MAX_REGS - 1);
 }
 
 //-------------------------------------------------------------------------------------------------- empty
-// Verifica si la lista está vacía.
+// Verifica si la lista estÃ¡ vacÃ­a.
 bool Management::isEmpty() const {
 	return this->counterOfRegs == -1;
 }
 
 //-------------------------------------------------------------------------------------------------- valid pos
-// Valida si la posición otorgada es válida.
+// Valida si la posiciÃ³n otorgada es vÃ¡lida.
 bool Management::isValidPos(const int& pos) const{
 	if( pos == -1 || pos >= MAX_REGS ){
 		return false;
@@ -87,7 +87,7 @@ bool Management::isValidPos(const int& pos) const{
 }
 
 //-------------------------------------------------------------------------------------------------- add
-// Añande un nuevo registro en base a un producto, una posición y una función que decida si eliminar
+// AÃ±ande un nuevo registro en base a un producto, una posiciÃ³n y una funciÃ³n que decida si eliminar
 // un registro existente o no.
 void Management::addRegister(const Product& prodToAdd, bool _replace(const bool &isToDelete)) {
 	Product *newProd = nullptr;
@@ -95,7 +95,7 @@ void Management::addRegister(const Product& prodToAdd, bool _replace(const bool 
 	int insertInPos = -1;
 
 	if( isFull() ){
-		throw("No se admiten más registros. Se ha llenado la capacidad de los registros.");
+		throw("No se admiten mÃ¡s registros. Se ha llenado la capacidad de los registros.");
 	}
 
 	newProd = new Product(prodToAdd);
@@ -113,7 +113,7 @@ void Management::addRegister(const Product& prodToAdd, bool _replace(const bool 
 	}
 
 	if( !isToAdd ){
-		throw("\nLa operación fue cancelada por petición.");
+		throw("\nLa operaciÃ³n fue cancelada por peticiÃ³n.");
 	}
 
 	this->products[insertInPos] = *newProd;
@@ -123,14 +123,14 @@ void Management::addRegister(const Product& prodToAdd, bool _replace(const bool 
 // Elimina un registro en base a un producto otorgado.
 void Management::deleteRegister(Product *prodToDelete, bool _delete(const bool &isToDelete)) {
 	if( !_delete(true) ){
-		throw("\nLa operación fue cancelada por petición.");
+		throw("\nLa operaciÃ³n fue cancelada por peticiÃ³n.");
 	}
 
 	prodToDelete->setIsDeleted(true);
 }
 
 //-------------------------------------------------------------------------------------------------- find
-// Busca un producto en base a un id y retorna una posición.
+// Busca un producto en base a un id y retorna una posiciÃ³n.
 int Management::findProduct(const char id[MAX_CHARS_OF_ID]) const {
 	int i = 0;
 	Product aux;
@@ -149,7 +149,7 @@ int Management::findProduct(const char id[MAX_CHARS_OF_ID]) const {
 }
 
 //-------------------------------------------------------------------------------------------------- recover
-// Retorna un producto en base a una posición otorgada.
+// Retorna un producto en base a una posiciÃ³n otorgada.
 Product* Management::recoverProduct(const int& posToRecover){
 	if( isValidPos(posToRecover) ){
 		return &this->products[posToRecover];
@@ -162,7 +162,7 @@ void Management::saveRegistersToFile() {
 	int i = 0;
 	ofstream file;
 
-	file.open(OUT_FILE_PATH, ofstream::out);
+	file.open(OUT_FILE_PATH, ofstream::out | ofstream::binary);
 
 	if( !file.is_open() ){
 		throw("No fue posible crear el archivo.");
@@ -184,7 +184,7 @@ void Management::readRegistersFromFileLXL(const string &pathOfFile) {
 	Product newProduct;
 	ifstream file;
 
-	file.open(pathOfFile, ifstream::in);
+	file.open(pathOfFile, ifstream::in | ifstream::binary);
 
 	if( !file.is_open() ){
 		throw("No fue posible encontrar el archivo " + pathOfFile);
@@ -203,11 +203,12 @@ void Management::readRegistersFromFileLXL(const string &pathOfFile) {
 
 //-------------------------------------------------------------------------------------------------- character per character
 void Management::readRegistersFromFileCXC(const string &pathOfFile) {
+	Product newProduct;
 	char readingChar;
 	ifstream file;
 	string aux;
 
-	file.open(pathOfFile, ifstream::in);
+	file.open(pathOfFile, ifstream::in | ifstream::binary);
 
 	if( !file.is_open() ){
 		throw("No fue posible encontrar el archivo " + pathOfFile);
@@ -216,7 +217,8 @@ void Management::readRegistersFromFileCXC(const string &pathOfFile) {
 	while( file.get(readingChar) ){
 		switch(readingChar){
 			case '\n':
-				this->products[++this->counterOfRegs] = Product::fromString(aux);
+				newProduct.fromString(aux);
+				this->products[++this->counterOfRegs] = newProduct;
 				aux = "";
 				break;
 			default:
